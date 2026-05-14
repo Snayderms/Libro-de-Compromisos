@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Libro de Compromisos · Hermandad</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#0F1117;
+  --surface:#181C27;
+  --surface2:#1E2335;
+  --surface3:#252B40;
+  --border:#2A3050;
+  --border2:#3A4468;
+  --text:#EDF0FF;
+  --text2:#8B93B8;
+  --text3:#525B80;
+  --accent:#4F6EF7;
+  --accent2:#6B87FF;
+  --accent-glow:rgba(79,110,247,0.18);
+  --green:#2ECC8A;
+  --green-bg:rgba(46,204,138,0.12);
+  --amber:#F0A500;
+  --amber-bg:rgba(240,165,0,0.12);
+  --red:#F05252;
+  --red-bg:rgba(240,82,82,0.12);
+  --blue:#4F9CF7;
+  --blue-bg:rgba(79,156,247,0.12);
+  --radius:10px;
+  --radius-lg:16px;
+  --radius-xl:22px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;line-height:1.6}
+
+.site-header{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:0 1.5rem;height:62px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;
+}
+.brand{font-family:'Playfair Display',serif;font-size:18px;color:var(--text);display:flex;align-items:center;gap:10px}
+.brand-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.header-right{display:flex;align-items:center;gap:8px}
+.mode-badge{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:4px 12px;border-radius:20px}
+.mode-badge.viewer{background:rgba(139,147,184,0.12);color:var(--text2);border:1px solid var(--border)}
+.mode-badge.admin{background:var(--accent-glow);color:var(--accent2);border:1px solid rgba(79,110,247,0.3)}
+.btn-header{background:var(--surface2);border:1px solid var(--border);color:var(--text2);border-radius:var(--radius);padding:7px 14px;font-size:13px;font-family:'Outfit',sans-serif;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .15s}
+.btn-header:hover{background:var(--surface3);color:var(--text);border-color:var(--border2)}
+
+#overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);z-index:200;align-items:center;justify-content:center;padding:1rem}
+#overlay.active{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-xl);padding:2rem;width:100%;max-width:380px;box-shadow:0 24px 60px rgba(0,0,0,0.5);animation:popIn .2s ease}
+@keyframes popIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.modal-icon{width:54px;height:54px;border-radius:50%;background:var(--accent-glow);border:1px solid rgba(79,110,247,0.3);display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;font-size:22px}
+.modal h2{font-family:'Playfair Display',serif;font-size:21px;text-align:center;margin-bottom:.35rem}
+.modal p{font-size:13px;color:var(--text2);text-align:center;margin-bottom:1.5rem}
+.err{color:var(--red);font-size:12px;margin-top:6px;display:none}
+.err.show{display:block}
+
+label{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);display:block;margin-bottom:5px}
+input,textarea,select{width:100%;border:1px solid var(--border);border-radius:var(--radius);padding:10px 13px;font-size:14px;font-family:'Outfit',sans-serif;background:var(--surface2);color:var(--text);outline:none;transition:border-color .15s,box-shadow .15s}
+input::placeholder,textarea::placeholder{color:var(--text3)}
+input:focus,textarea:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+select option{background:var(--surface2)}
+textarea{resize:vertical;min-height:80px}
+.frow{margin-bottom:.9rem}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+.btn{border:1px solid var(--border2);background:var(--surface2);border-radius:var(--radius);padding:9px 18px;font-size:13px;font-family:'Outfit',sans-serif;font-weight:500;cursor:pointer;color:var(--text);display:inline-flex;align-items:center;gap:6px;transition:all .12s}
+.btn:hover{background:var(--surface3);border-color:var(--border2)}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent2);border-color:var(--accent2)}
+.btn-danger{color:var(--red);border-color:transparent}
+.btn-danger:hover{background:var(--red-bg)}
+.btn-sm{padding:5px 12px;font-size:12px}
+.btn-full{width:100%;justify-content:center}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+.container{max-width:860px;margin:0 auto;padding:1.75rem 1.25rem 4rem}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.5rem}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:.9rem 1rem;text-align:center}
+.stat-n{font-family:'Playfair Display',serif;font-size:28px;line-height:1;margin-bottom:3px}
+.stat-l{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);font-weight:600}
+.stat.st-pendiente .stat-n{color:var(--amber)}
+.stat.st-progreso  .stat-n{color:var(--blue)}
+.stat.st-cumplido  .stat-n{color:var(--green)}
+.stat.st-vencido   .stat-n{color:var(--red)}
+
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:1.1rem;flex-wrap:wrap}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.fbtn{font-size:12px;font-weight:500;padding:5px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--text2);font-family:'Outfit',sans-serif;transition:all .12s}
+.fbtn:hover{border-color:var(--border2);color:var(--text)}
+.fbtn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+
+.form-panel{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-xl);padding:1.5rem;margin-bottom:1.25rem;display:none;animation:slideD .18s ease}
+.form-panel.open{display:block}
+@keyframes slideD{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.form-panel-hdr{font-family:'Playfair Display',serif;font-size:18px;margin-bottom:1.25rem;display:flex;align-items:center;gap:8px}
+.form-actions{display:flex;gap:8px;margin-top:.5rem;flex-wrap:wrap}
+
+.comp-list{display:flex;flex-direction:column;gap:10px}
+.comp-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.1rem 1.25rem;transition:border-color .15s,box-shadow .15s;animation:fadeUp .22s ease;position:relative;overflow:hidden}
+.comp-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px}
+.comp-card.pr-alta::before{background:var(--red)}
+.comp-card.pr-media::before{background:var(--amber)}
+.comp-card.pr-baja::before{background:var(--green)}
+.comp-card:hover{border-color:var(--border2);box-shadow:0 4px 24px rgba(0,0,0,0.3)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:6px}
+.card-title{font-family:'Playfair Display',serif;font-size:16px;color:var(--text);line-height:1.3}
+.card-meta{font-size:12px;color:var(--text2);display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:4px}
+.card-meta span{display:flex;align-items:center;gap:4px}
+.card-desc{font-size:13px;color:var(--text2);line-height:1.6;margin-top:6px;padding-top:8px;border-top:1px solid var(--border)}
+.card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);flex-wrap:wrap;gap:8px}
+.card-date-info{font-size:11px;color:var(--text3)}
+.card-actions{display:flex;gap:6px}
+
+.sbadge{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:3px 10px;border-radius:20px;white-space:nowrap}
+.sb-pendiente{background:var(--amber-bg);color:var(--amber)}
+.sb-progreso {background:var(--blue-bg);color:var(--blue)}
+.sb-cumplido {background:var(--green-bg);color:var(--green)}
+.sb-vencido  {background:var(--red-bg);color:var(--red)}
+
+.empty{text-align:center;padding:4rem 1rem;color:var(--text3)}
+.empty-icon{font-size:48px;margin-bottom:1rem;opacity:.4}
+.empty p{font-size:14px}
+.loading{text-align:center;padding:3rem;color:var(--text3)}
+.spinner{width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 1rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+#toast{position:fixed;bottom:1.5rem;right:1.5rem;z-index:999;background:var(--surface3);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:.75rem 1.25rem;font-size:13px;color:var(--text);box-shadow:0 8px 32px rgba(0,0,0,0.4);display:none;align-items:center;gap:8px;max-width:300px}
+#toast.show{display:flex;animation:slideUp .2s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.tdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.tdot.ok{background:var(--green)}
+.tdot.fail{background:var(--red)}
+
+.sync-bar{font-size:11px;color:var(--text3);text-align:right;margin-bottom:.5rem}
+
+@media(max-width:600px){
+  .fgrid{grid-template-columns:1fr}
+  .stats{grid-template-columns:1fr 1fr}
+  .site-header{padding:0 1rem}
+  .container{padding:1rem .9rem 3rem}
+  .card-footer{flex-direction:column;align-items:flex-start}
+  .form-actions{flex-direction:column}
+  .form-actions .btn{width:100%;justify-content:center}
+  .toolbar{flex-direction:column;align-items:flex-start}
+  .brand span{font-size:15px}
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="brand">
+    <div class="brand-icon">📋</div>
+    <span>Libro de Compromisos</span>
+  </div>
+  <div class="header-right">
+    <span class="mode-badge viewer" id="mode-badge">Solo lectura</span>
+    <button class="btn-header" id="auth-btn" onclick="toggleAuth()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <span id="auth-label">Admin</span>
+    </button>
+  </div>
+</header>
+
+<div id="overlay">
+  <div class="modal">
+    <div class="modal-icon">🔐</div>
+    <h2>Acceso administrador</h2>
+    <p>Solo los administradores pueden agregar, editar o eliminar compromisos.</p>
+    <div class="frow">
+      <label for="pass-in">Contraseña</label>
+      <input type="password" id="pass-in" placeholder="••••••••••••" onkeydown="if(event.key==='Enter')tryLogin()"/>
+      <div class="err" id="pass-err">Contraseña incorrecta. Intenta de nuevo.</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-primary btn-full" onclick="tryLogin()">Entrar</button>
+      <button class="btn" onclick="closeOverlay()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"><div class="tdot ok" id="tdot"></div><span id="tmsg"></span></div>
+
+<main class="container">
+  <div class="stats">
+    <div class="stat st-pendiente"><div class="stat-n" id="cnt-pendiente">–</div><div class="stat-l">Pendientes</div></div>
+    <div class="stat st-progreso"><div class="stat-n" id="cnt-progreso">–</div><div class="stat-l">En progreso</div></div>
+    <div class="stat st-cumplido"><div class="stat-n" id="cnt-cumplido">–</div><div class="stat-l">Cumplidos</div></div>
+    <div class="stat st-vencido"><div class="stat-n" id="cnt-vencido">–</div><div class="stat-l">Vencidos</div></div>
+  </div>
+
+  <div class="toolbar">
+    <div class="filters">
+      <button class="fbtn active" onclick="setFilter('todos',this)">Todos</button>
+      <button class="fbtn" onclick="setFilter('pendiente',this)">Pendiente</button>
+      <button class="fbtn" onclick="setFilter('progreso',this)">En progreso</button>
+      <button class="fbtn" onclick="setFilter('cumplido',this)">Cumplido</button>
+      <button class="fbtn" onclick="setFilter('vencido',this)">Vencido</button>
+    </div>
+    <div id="admin-toolbar" style="display:none">
+      <button class="btn btn-primary" onclick="openNewForm()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Agregar compromiso
+      </button>
+    </div>
+  </div>
+
+  <div class="form-panel" id="form-panel">
+    <div class="form-panel-hdr">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
+      <span id="form-hdr-txt">Nuevo compromiso</span>
+    </div>
+    <div class="frow">
+      <label for="f-titulo">Título del compromiso *</label>
+      <input type="text" id="f-titulo" placeholder="Describe el compromiso claramente"/>
+    </div>
+    <div class="fgrid">
+      <div class="frow">
+        <label for="f-responsable">Responsable</label>
+        <input type="text" id="f-responsable" placeholder="Nombre o área"/>
+      </div>
+      <div class="frow">
+        <label for="f-fecha">Fecha límite</label>
+        <input type="date" id="f-fecha"/>
+      </div>
+    </div>
+    <div class="fgrid">
+      <div class="frow">
+        <label for="f-status">Estado</label>
+        <select id="f-status">
+          <option value="pendiente">Pendiente</option>
+          <option value="progreso">En progreso</option>
+          <option value="cumplido">Cumplido</option>
+          <option value="vencido">Vencido</option>
+        </select>
+      </div>
+      <div class="frow">
+        <label for="f-prioridad">Prioridad</label>
+        <select id="f-prioridad">
+          <option value="media">Media</option>
+          <option value="alta">Alta</option>
+          <option value="baja">Baja</option>
+        </select>
+      </div>
+    </div>
+    <div class="frow">
+      <label for="f-desc">Descripción / Detalle</label>
+      <textarea id="f-desc" placeholder="Contexto, acuerdos o instrucciones adicionales..."></textarea>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-primary" onclick="saveComp()" id="save-btn">Guardar compromiso</button>
+      <button class="btn" onclick="closeForm()">Cancelar</button>
+    </div>
+  </div>
+
+  <div class="sync-bar" id="sync-bar"></div>
+  <div id="comp-list">
+    <div class="loading"><div class="spinner"></div><p>Conectando con la base de datos...</p></div>
+  </div>
+</main>
+
+<script>
+const SUPABASE_URL = "https://khapreastkzhcqwrrsba.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtoYXByZWFzdGt6aGNxd3Jyc2JhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3MTY2NDgsImV4cCI6MjA5NDI5MjY0OH0.d-SRixG5gtKc_2Y301g7rNqqVqyQSlxsvWNFe9PDZOE";
+const PASS        = "directiva26-27";
+const API         = `${SUPABASE_URL}/rest/v1/compromisos`;
+const HDR         = {"Content-Type":"application/json","apikey":SUPABASE_KEY,"Authorization":`Bearer ${SUPABASE_KEY}`};
+
+let isAdmin = false;
+let filter  = "todos";
+let editId  = null;
+let data    = [];
+
+const SL = {pendiente:"Pendiente",progreso:"En progreso",cumplido:"Cumplido",vencido:"Vencido"};
+const PL = {alta:"Alta",media:"Media",baja:"Baja"};
+const PC = {alta:"var(--red)",media:"var(--amber)",baja:"var(--green)"};
+
+function h(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+
+function fmtDate(d){
+  if(!d) return "—";
+  const [y,m,day]=d.split("-");
+  return `${parseInt(day)} ${["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"][parseInt(m)-1]} ${y}`;
+}
+
+function isOverdue(fecha,status){
+  if(status==="cumplido"||!fecha) return false;
+  return new Date(fecha)<new Date(new Date().toDateString());
+}
+
+function toast(msg,ok=true){
+  const t=document.getElementById("toast");
+  document.getElementById("tdot").className="tdot "+(ok?"ok":"fail");
+  document.getElementById("tmsg").textContent=msg;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),3200);
+}
+
+function setSyncBar(txt){
+  document.getElementById("sync-bar").textContent=txt;
+}
+
+// ── API ───────────────────────────────────────────────────
+async function fetchAll(){
+  try{
+    const r=await fetch(`${API}?order=id.desc`,{headers:HDR});
+    if(!r.ok) throw new Error(r.status);
+    data=await r.json();
+    const now=new Date().toLocaleTimeString("es-PE",{hour:"2-digit",minute:"2-digit"});
+    setSyncBar(`Última actualización: ${now}`);
+    render();
+  }catch(e){
+    document.getElementById("comp-list").innerHTML=
+      `<div class="empty"><div class="empty-icon">⚠️</div><p>No se pudo conectar a la base de datos.<br>Verifica tu conexión e intenta recargar la página.</p></div>`;
+  }
+}
+
+async function apiInsert(body){
+  const r=await fetch(API,{method:"POST",headers:{...HDR,"Prefer":"return=representation"},body:JSON.stringify(body)});
+  if(!r.ok) throw new Error(await r.text());
+}
+
+async function apiUpdate(id,body){
+  const r=await fetch(`${API}?id=eq.${id}`,{method:"PATCH",headers:{...HDR,"Prefer":"return=representation"},body:JSON.stringify(body)});
+  if(!r.ok) throw new Error(await r.text());
+}
+
+async function apiDelete(id){
+  const r=await fetch(`${API}?id=eq.${id}`,{method:"DELETE",headers:HDR});
+  if(!r.ok) throw new Error(await r.text());
+}
+
+// Actualiza cada 15 segundos para que todos vean cambios
+setInterval(fetchAll,15000);
+
+// ── RENDER ────────────────────────────────────────────────
+function render(){
+  ["pendiente","progreso","cumplido","vencido"].forEach(s=>{
+    document.getElementById("cnt-"+s).textContent=data.filter(c=>c.status===s).length;
+  });
+  const filtered=filter==="todos"?data:data.filter(c=>c.status===filter);
+  const list=document.getElementById("comp-list");
+
+  if(filtered.length===0){
+    list.innerHTML=`<div class="empty"><div class="empty-icon">📭</div><p>${filter==="todos"?"Aún no hay compromisos registrados.":"No hay compromisos en esta categoría."}</p></div>`;
+    return;
+  }
+
+  const icon_user=`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+  const icon_cal=`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`;
+  const icon_star=`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
+  const icon_edit=`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`;
+  const icon_del=`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>`;
+
+  list.innerHTML=filtered.map(c=>{
+    const ov=isOverdue(c.fecha,c.status);
+    return `
+    <div class="comp-card pr-${c.prioridad||'media'}">
+      <div class="card-top">
+        <div class="card-title">${h(c.titulo)}</div>
+        <span class="sbadge sb-${c.status}">${SL[c.status]}</span>
+      </div>
+      <div class="card-meta">
+        ${c.responsable?`<span>${icon_user}${h(c.responsable)}</span>`:""}
+        ${c.fecha?`<span style="color:${ov?"var(--red)":"inherit"}">${icon_cal}${fmtDate(c.fecha)}${ov?" · Vencido":""}</span>`:""}
+        <span style="color:${PC[c.prioridad||'media']}">${icon_star}Prioridad ${PL[c.prioridad||"media"]}</span>
+      </div>
+      ${c.descripcion?`<div class="card-desc">${h(c.descripcion)}</div>`:""}
+      <div class="card-footer">
+        <span class="card-date-info">Registrado: ${fmtDate(c.creado)}</span>
+        ${isAdmin?`
+        <div class="card-actions">
+          <button class="btn btn-sm" onclick="editComp(${c.id})">${icon_edit} Editar</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteComp(${c.id})">${icon_del} Eliminar</button>
+        </div>`:""}
+      </div>
+    </div>`;
+  }).join("");
+}
+
+// ── AUTH ──────────────────────────────────────────────────
+function toggleAuth(){isAdmin?logout():openOverlay()}
+function openOverlay(){
+  document.getElementById("overlay").classList.add("active");
+  document.getElementById("pass-in").value="";
+  document.getElementById("pass-err").classList.remove("show");
+  setTimeout(()=>document.getElementById("pass-in").focus(),80);
+}
+function closeOverlay(){document.getElementById("overlay").classList.remove("active")}
+function tryLogin(){
+  if(document.getElementById("pass-in").value===PASS){
+    isAdmin=true;closeOverlay();
+    document.getElementById("mode-badge").textContent="Administrador";
+    document.getElementById("mode-badge").className="mode-badge admin";
+    document.getElementById("auth-label").textContent="Salir";
+    document.getElementById("admin-toolbar").style.display="block";
+    render();toast("Sesión de administrador iniciada ✓");
+  }else{
+    document.getElementById("pass-err").classList.add("show");
+    document.getElementById("pass-in").select();
+  }
+}
+function logout(){
+  isAdmin=false;closeForm();
+  document.getElementById("mode-badge").textContent="Solo lectura";
+  document.getElementById("mode-badge").className="mode-badge viewer";
+  document.getElementById("auth-label").textContent="Admin";
+  document.getElementById("admin-toolbar").style.display="none";
+  render();
+}
+
+// ── FILTERS ───────────────────────────────────────────────
+function setFilter(f,btn){
+  filter=f;
+  document.querySelectorAll(".fbtn").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  render();
+}
+
+// ── FORM ──────────────────────────────────────────────────
+function openNewForm(){
+  editId=null;
+  ["f-titulo","f-responsable","f-desc"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("f-fecha").value="";
+  document.getElementById("f-status").value="pendiente";
+  document.getElementById("f-prioridad").value="media";
+  document.getElementById("form-hdr-txt").textContent="Nuevo compromiso";
+  document.getElementById("save-btn").textContent="Guardar compromiso";
+  document.getElementById("form-panel").classList.add("open");
+  document.getElementById("f-titulo").focus();
+}
+function editComp(id){
+  const c=data.find(x=>x.id===id);if(!c) return;
+  editId=id;
+  document.getElementById("f-titulo").value=c.titulo||"";
+  document.getElementById("f-responsable").value=c.responsable||"";
+  document.getElementById("f-fecha").value=c.fecha||"";
+  document.getElementById("f-status").value=c.status||"pendiente";
+  document.getElementById("f-prioridad").value=c.prioridad||"media";
+  document.getElementById("f-desc").value=c.descripcion||"";
+  document.getElementById("form-hdr-txt").textContent="Editar compromiso";
+  document.getElementById("save-btn").textContent="Guardar cambios";
+  document.getElementById("form-panel").classList.add("open");
+  document.getElementById("form-panel").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function closeForm(){
+  document.getElementById("form-panel").classList.remove("open");
+  editId=null;
+}
+async function saveComp(){
+  const titulo=document.getElementById("f-titulo").value.trim();
+  if(!titulo){document.getElementById("f-titulo").focus();return;}
+  const body={
+    titulo,
+    responsable:document.getElementById("f-responsable").value.trim()||null,
+    fecha:document.getElementById("f-fecha").value||null,
+    status:document.getElementById("f-status").value,
+    prioridad:document.getElementById("f-prioridad").value,
+    descripcion:document.getElementById("f-desc").value.trim()||null,
+  };
+  const btn=document.getElementById("save-btn");
+  btn.textContent="Guardando...";btn.disabled=true;
+  try{
+    if(editId){
+      await apiUpdate(editId,body);
+      toast("Compromiso actualizado ✓");
+    }else{
+      body.creado=new Date().toISOString().slice(0,10);
+      await apiInsert(body);
+      toast("Compromiso agregado ✓");
+    }
+    closeForm();await fetchAll();
+  }catch{
+    toast("Error al guardar. Intenta de nuevo.",false);
+  }finally{
+    btn.textContent=editId?"Guardar cambios":"Guardar compromiso";
+    btn.disabled=false;
+  }
+}
+async function deleteComp(id){
+  if(!confirm("¿Eliminar este compromiso? Esta acción no se puede deshacer.")) return;
+  try{
+    await apiDelete(id);
+    toast("Compromiso eliminado");
+    await fetchAll();
+  }catch{
+    toast("Error al eliminar.",false);
+  }
+}
+
+// ── INIT ──────────────────────────────────────────────────
+fetchAll();
+</script>
+</body>
+</html>
